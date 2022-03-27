@@ -3,6 +3,9 @@ import cv2
 import time
 
 
+videoPath = "C:\\Users\\stijn\\Documents\\GitHub\\s22-team6-project\\OpenCV\\imageExamples\\drive.mp4"
+#videoPath = "C:\\Users\\stijn\\Documents\\GitHub\\s22-team6-project\\OpenCV\\imageExamples\\drive2.mp4"
+
 #used to detect edges in an image/frame
 def canyEdgeDetector(image):
     edged = cv2.Canny(image, 250, 350)
@@ -23,8 +26,9 @@ def getROI(image):
     masked_image = cv2.bitwise_and(image, mask)
     return masked_image
 
+#finds the lines in the image
 def getLines(image):
-	lines = cv2.HoughLinesP(image, 0.3, np.pi/180, 100, np.array([]), minLineLength=10, maxLineGap=150)
+	lines = cv2.HoughLinesP(image, 0.3, np.pi/180, 30, np.array([]), minLineLength=50, maxLineGap=20)
 	return lines
 
 
@@ -32,13 +36,13 @@ def displayLines(image, lines):
     if lines is not None:
         for line in lines:
             x1, y1, x2, y2 = line.reshape(4) #converting to 1d array
-            cv2.line(image, (x1, y1), (x2, y2), (255, 50, 255), 10)
+            cv2.line(image, (x1, y1), (x2, y2), (255, 50, 255), 5)
     return image
 
 # creating the videocapture object
 # and reading from the input file
 # Change it to 0 if reading from webcam
-cap = cv2.VideoCapture("C:\\Users\\stijn\\Documents\\GitHub\\s22-team6-project\\OpenCV\\imageExamples\\drive.mp4")
+cap = cv2.VideoCapture(videoPath)
 
 # used to record the time when we processed last frame
 prev_frame_time = 0
@@ -58,7 +62,8 @@ while(cap.isOpened()):
         break
  
     # Our operations on the frame come here
-    gray = frame    
+    gray = frame
+
     # resizing the frame size according to our need
     gray = cv2.resize(gray, (900, 700))
     canny = canyEdgeDetector(gray)
@@ -99,10 +104,16 @@ while(cap.isOpened()):
  
     # displaying the frame with fps
     cv2.imshow('frame', gray)
+
+    #DEBUG OUTPUTS
+    #cv2.imshow('frame', canny)
+    #cv2.imshow('frame', roi)
  
     # press 'Q' if you want to exit
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
+
+
  
 # When everything done, release the capture
 cap.release()
