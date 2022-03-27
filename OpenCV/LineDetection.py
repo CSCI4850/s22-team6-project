@@ -27,7 +27,7 @@ def getROI(image):
     return masked_image
 
 #finds the lines in the image
-def getLines(image):
+def getLines(image): #note: threshold of 30 seems to work well on lines
 	lines = cv2.HoughLinesP(image, 0.3, np.pi/180, 30, np.array([]), minLineLength=50, maxLineGap=20)
 	return lines
 
