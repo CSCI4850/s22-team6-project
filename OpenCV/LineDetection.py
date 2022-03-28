@@ -3,8 +3,8 @@ import cv2
 import time
 
 
-videoPath = "C:\\Users\\stijn\\Documents\\GitHub\\s22-team6-project\\OpenCV\\imageExamples\\drive.mp4"
-#videoPath = "C:\\Users\\stijn\\Documents\\GitHub\\s22-team6-project\\OpenCV\\imageExamples\\drive2.mp4"
+videoPath = "imageExamples\\drive.mp4"
+#videoPath = "imageExamples\\drive2.mp4"
 
 #used to detect edges in an image/frame
 def canyEdgeDetector(image):
