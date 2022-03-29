@@ -4,11 +4,15 @@
 
 ## Team Members:
 
-James Coyle
-Kwabena Owusu Fosuhene
-Le'Shawn Sears
-Patrick Burnett
-Stijn Slump
+James Coyle https://csci4850-5850-s22.slack.com/team/U02UAFZP0LW
+
+Kwabena Owusu Fosuhene https://csci4850-5850-s22.slack.com/team/U02U2HMESSK
+
+Le'Shawn Sears https://csci4850-5850-s22.slack.com/team/U02UAG284UE
+
+Patrick Burnett https://csci4850-5850-s22.slack.com/team/U02UH7A60JF
+
+Stijn Slump https://csci4850-5850-s22.slack.com/team/U02UAG05BAS
 
 
 ---------------------------
