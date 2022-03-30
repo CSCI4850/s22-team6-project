@@ -11,6 +11,22 @@ def canyEdgeDetector(image):
     edged = cv2.Canny(image, 250, 350)
     return edged
 
+def average_slope_intercept(image, lines):
+    left_fit = []
+    right_fit = []
+    for line in lines:
+        x1, y1, x2, y2 = line.reshape(4)
+        parameters = np.polyfit((x1, y1), (x2, y2), 1)
+        slope = parameters[0]
+        intercept = parameters[1]
+        if slope < 0:
+            left_fit.append((slope, intercept))
+        else:
+            right_fit.append((slope, intercept))
+    left_fit_average = np.average(left_fit, axis = 0)
+    right_fit_average = np.average(right_fit, axis = 0)
+    return np.array((left_line, right_line))
+
 
 #create a area of interest we care about 
 def getROI(image):
@@ -74,6 +90,7 @@ while(cap.isOpened()):
     #get the lines in roi
     lines = getLines(roi)
 
+    #averageLines = (gray,lines)
 
     gray = displayLines(gray,lines)
 
