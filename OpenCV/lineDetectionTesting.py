@@ -14,7 +14,6 @@ def canyEdgeDetector(image):
 
 
 
-
 #create a area of interest we care about 
 def getROI(image):
     height = image.shape[0]
@@ -31,8 +30,8 @@ def getROI(image):
 
 #finds the lines in the image
 def getLines(image): #note: threshold of 30 seems to work well on lines
-	lines = cv2.HoughLinesP(image, 0.3, np.pi/180, 30, np.array([]), minLineLength=100, maxLineGap=5)
-	return lines
+    lines = cv2.HoughLinesP(image, 0.3, np.pi/180, 30, np.array([]), minLineLength=35, maxLineGap=20)
+    return lines
 
 
 def displayLines(image, lines):
@@ -41,6 +40,14 @@ def displayLines(image, lines):
             x1, y1, x2, y2 = line.reshape(4) #converting to 1d array
             cv2.line(image, (x1, y1), (x2, y2), (255, 50, 255), 5)
     return image
+
+
+
+def averageLines(lines):
+
+    #get the average of left lines and right lines and print that
+    print()
+
 
 # creating the videocapture object
 # and reading from the input file
@@ -66,20 +73,24 @@ while(cap.isOpened()):
     # Our operations on the frame come here
     original = frame
     original = cv2.resize(original, (900, 700))
-
+    gray = original
     gray = cv2.cvtColor(original, cv2.COLOR_BGR2GRAY)
-    gray = cv2.GaussianBlur(gray, (9, 9), 0)
-    th3 = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
-    canny = canyEdgeDetector(th3)
+    canny = canyEdgeDetector(gray)
+    #canny = cv2.GaussianBlur(canny, (3,3), 0)
     roi = getROI(canny)
 
     #get the lines in roi
     lines = getLines(roi)
 
-    #averging the lines that are close to eachother
+    #averge lines
+    averageLines(lines)
 
     #displaying lines on original
     original = displayLines(original,lines)
+
+
+    color = (0, 255, 0)
+    original = cv2.line(original,(522,437),(635,550),color,5)
 
 
  
