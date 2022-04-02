@@ -7,7 +7,7 @@ import time
 # and reading from the input file
 # Change it to 0 if reading from webcam
  
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(i)
  
 # used to record the time when we processed last frame
 prev_frame_time = 0
