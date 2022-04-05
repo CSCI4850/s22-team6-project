@@ -25,6 +25,26 @@ Create a self-driving car that works in a simulation that runs on the unity engi
 
 ## Current Challenges
 
+* make python program connect to simulation for car control
+
+* create more data by augmenting the original data
+
+* start building the network
+
+* clean data
+
+* train model
+
+* test model
+
 ---------------------------
 
 ## Completed Challenges
+
+* get simulation to run
+
+* collect useful data
+
+* analyze data
+
+* write linedetection filter
