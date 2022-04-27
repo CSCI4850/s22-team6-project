@@ -24,7 +24,7 @@ import base64                       #for decoding images that come from the simu
 from flask import Flask             #net framework that we use to connect
 
 #model name
-MODEL_NAME = "car.h5"
+MODEL_NAME = "Test_Model.h5"
 
 #min and max speed and speed limit:
 MIN_SPEED = 0
@@ -46,15 +46,18 @@ def telemetry(sid, data):
         speed = float(data["speed"])
         image = Image.open(BytesIO(base64.b64decode(data["image"])))
         try:
-            image = np.asarray(image)
+            # Convert image into array
+            image = npasarray(image)
             image = preProcess(image)
-            image = no.array([image])
+            image = np.array([image])
+            # Predict steering angle
             steering_angle = float(model.predict(image, batch_size=1))
             if speed > speed_limit:
                 speed_limit = MIN_SPEED
             else:
                 speed_limit = MAX_SPEED
             throttle = 1.0 - steering_angle**2 - (speed/speed_limit)**2
+        
             print('{} {} {}'.format(steering_angle, throttle, speed))
             send_control(steering_angle, throttle)
         except Exception as e:
@@ -63,8 +66,8 @@ def telemetry(sid, data):
             timestamp = datetime.utcnow().strftime('%Y_%m_%d_%H_%M_%S_%f')[:-3]
             image_filename = os.pathb.join(args.image_folder, timestamp)
             image.save('{}.jpg'.format(image_filename))
-        else:
-            sio.emit('manual',data={},skip_sid = True)
+    else:
+        sio.emit('manual',data={},skip_sid = True)
 
 @sio.on('connect')
 def connect(sid, environ):
@@ -72,6 +75,7 @@ def connect(sid, environ):
     send_control(0,0)
                        
 def send_control(steering_angle, throttle):
+    print("Sending control")
     sio.emit("steer", data = {'steering_angle':steering_angle.__str__(),'throttle':throttle.__str__()},skip_sid=True)
     
 if __name__ == '__main__':
@@ -87,12 +91,12 @@ if __name__ == '__main__':
         else:
             shutil.rmtree(args.image_folder)
             os.maskedirs(args.image_folder)
-            ptiny("RECORDING THIS RUN..")
+        print("RECORDING THIS RUN..")
     else:
         print("NOT RECORDING THIS RUN...")
         
-app = socketio.Middleware(sio, app)
-eventlet.wsgi.server(eventlet.listen(('',4567)),app)
+    app = socketio.Middleware(sio, app)
+    eventlet.wsgi.server(eventlet.listen(('',4567)),app)
 
     
 #retrieves the frame/image from the simulation and decodes it
