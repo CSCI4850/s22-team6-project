@@ -8,13 +8,24 @@
 
 # THIS PROGRAM RUNS THE SIMULATION - SHOULD BE FINAL PRODUCT
 
+#Driver file that:
+# 1) imports a generated model by CNN_model.ipynb
+# 2) connect to the simulation
+# 3) retrieves input data from sim
+# 4) decodes input data and feeds it to the model
+# 5) use the model to predict an action for the car
+# 6) send that action to the car
+
+# THIS PROGRAM RUNS THE SIMULATION - SHOULD BE FINAL PRODUCT
+
 #import libraries
 from tensorflow import keras
 from keras.models import load_model #for importing the model
 import numpy as np                  #for calculations and converting between formats
 from io import BytesIO              #for input and output
-import socketio                     #for connecting to simualation
+#import socketio                     #for connecting to simualation
 import eventlet
+import socketio
 import eventlet.wsgi
 import argparse
 from datetime import datetime
@@ -23,10 +34,11 @@ import os                           #for os actions
 import base64                       #for decoding images that come from the simulation
 from flask import Flask             #net framework that we use to connect
 import cv2
+import time
 
 #min and max speed and speed limit:
-MIN_SPEED = 10
-MAX_SPEED = 15
+MIN_SPEED = 1
+MAX_SPEED = 28.5
 speed_limit = MAX_SPEED
 
 
@@ -36,13 +48,23 @@ app = Flask(__name__)
 model = None
 prev_image_array = None
 
-@sio.event()
+
+new_frame_time = 0
+prev_frame_time = time.time()
+
+@sio.on("telemetry")
 def telemetry(sid, data):
-    MIN_SPEED = 5
-    MAX_SPEED = 15
-    speed_limit = MAX_SPEED
+    global speed_limit
+    global new_frame_time
+    global prev_frame_time
+
     if data:
-        steering_angle = float(data["steering_angle"])
+        new_frame_time = time.time()
+        fps = 1/(new_frame_time-prev_frame_time)
+        prev_frame_time = new_frame_time
+
+        steering_angle = (float(data["steering_angle"]))
+        steering_angle = steering_angle
         throttle = float(data["throttle"])
         speed = float(data["speed"])
         image = Image.open(BytesIO(base64.b64decode(data["image"])))
@@ -52,28 +74,24 @@ def telemetry(sid, data):
             image = np.array([image])
             steering_angle = float(model.predict(image, batch_size=1))
             if speed > speed_limit:
-                speed_limit = MIN_SPEED
+                speed_limit = MIN_SPEED  # slow down
             else:
                 speed_limit = MAX_SPEED
-            throttle = 1.0 - steering_angle**2 - (speed/speed_limit)**2
-            print('{} {} {}'.format(steering_angle, throttle, speed))
+            if speed == 0:
+                throttle = 1.0
+            else:
+                throttle = 1.0 - steering_angle**2 - (speed/speed_limit)**2
+            print('{} {} {} {}'.format(steering_angle, throttle, speed, fps))
             send_control(steering_angle, throttle)
         except Exception as e:
             print(e)
-        if args.image_folder != '':
-            timestamp = datetime.utcnow().strftime('%Y_%m_%d_%H_%M_%S_%f')[:-3]
-            image_filename = os.pathb.join(args.image_folder, timestamp)
-            image.save('{}.jpg'.format(image_filename))
-        else:
-            sio.emit('manual',data={},skip_sid = True)
-
 @sio.on("connect")
 def connect(sid, environ):
     print("connect ", sid)
     send_control(0,0)
                        
 def send_control(steering_angle, throttle):
-    sio.emit("steer", data = {'steering_angle':steering_angle.__str__(),'throttle':throttle.__str__()},skip_sid=True)
+    sio.emit("steer", data = {'steering_angle':steering_angle.__str__(),'throttle':throttle.__str__()})
     
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Remote Driving')
@@ -105,8 +123,8 @@ def preProcess(image):
     image = image[60:130,:,:]                                     #crops image
     image = np.float32(image)                                     #convert to float
     image = cv2.cvtColor(image,cv2.COLOR_BGR2YUV)                 #convert rbg to yuv for better line detection
-    image = cv2.GaussianBlur(image,(3,3),0)         #add light gassianblur
-    image = cv2.resize(image,(200,60))                      #resize the image so that it can be processed faster
+    image = cv2.GaussianBlur(image,(3,3),0)                       #add light gassianblur
+    image = cv2.resize(image,(200,60))                            #resize the image so that it can be processed faster
     image = image/255
     return image
     
