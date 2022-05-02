@@ -59,7 +59,7 @@ conda wnv create -f enviroment-gpu.yml
 
 This command might take a while to execute as it creates an anaconda environment will all the necessary python libraries needed to connect to the simulator. Activate the environment with the command:
 
-conda activate test2
+conda activate car
 
 Now we are ready to connect to the simulation. While keeping the terminal open, launch the simulator and start autonomous mode. Then type the command:
 
