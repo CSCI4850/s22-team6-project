@@ -63,7 +63,7 @@ conda activate car
 
 Now we are ready to connect to the simulation. While keeping the terminal open, launch the simulator and start autonomous mode. Then type the command:
 
-pyhton driver.py 1130pm_Model.h5
+python driver.py 1130pm_Model.h5
 
 into the terminal. It might take a minute for driver.py to connect to the simulation but the car should eventually start driving itself. The driver.py file works by creating a socket to send and receive data to and from the simulator. It takes data from the simulation as input, feeds that data through the pre-trained model in 1130pm_Model.h5, and outputs a steering angle decided by the model and sets the speed of the car.
 
